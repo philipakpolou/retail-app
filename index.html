@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Philip's Retail Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome to The Bird Store</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Cart</a>
+    </nav>
+  </header>
+<section id="search">
+  <input type="text" id="search-box" placeholder="Search products...">
+</section>
+<section id="filters">
+  <label for="price-filter">Max Price: </label>
+  <input type="number" id="price-filter" placeholder="Enter price">
+  <button onclick="filterByPrice()">Filter</button>
+</section>
+
+<section id="auth">
+  <h2>Login / Signup</h2>
+  <form id="signup-form">
+    <input type="email" id="signup-email" placeholder="Email" required>
+    <input type="password" id="signup-password" placeholder="Password" required>
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email" required>
+    <input type="password" id="login-password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <button id="logout">Logout</button>
+
+  <button id="google-login">Login with Google</button>
+
+</section>
+
+
+<section id="add-product">
+  <h2>Post an Ad</h2>
+  <form id="product-form">
+    <input type="text" id="product-name" placeholder="Product name" required>
+    <input type="number" id="product-price" placeholder="Price" required>
+    <input type="file" id="product-image" accept="image/*" required>
+    <button type="submit">Add Product</button>
+  </form>
+  <form id="product-form">
+  <input type="text" id="product-name" placeholder="Product name" required>
+  <input type="number" id="product-price" placeholder="Price" required>
+  <input type="file" id="product-image" accept="image/*" required>
+  <button type="submit">Add Product</button>
+</form>
+</section>
+
+<section id="products">
+  <div class="product">
+    <img src="images/tshirt.jpg" alt="T-Shirt" class="product-img">
+    <h2>T-Shirt</h2>
+    <p>$20</p>
+    <button onclick="addToCart('T-Shirt', 20)">Add to Cart</button>
+  </div>
+
+  <div class="product">
+    <img src="images/sneakers.jpg" alt="Sneakers" class="product-img">
+    <h2>Sneakers</h2>
+    <p>$50</p>
+    <button onclick="addToCart('Sneakers', 50)">Add to Cart</button>
+  </div>
+</section>
+
+
+  <section id="products">
+    <div class="product">
+      <h2>T-Shirt</h2>
+      <p>$20</p>
+      <img src="t-shirt.jpg" alt="T-Shirt" class="product-img">
+      <button onclick="addToCart('T-Shirt', 20)">Add to Cart</button>
+    </div>
+    <div class="product">
+      <h2>Sneakers</h2>
+      <p>$50</p>
+      <button onclick="addToCart('Sneakers', 50)">Add to Cart</button>
+    </div>
+  </section>
+
+  <section id="cart">
+    <h2>Your Cart</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: $<span id="cart-total">0</span></p>
+
+    <section id="products">
+  <div class="product">
+    <img src="images/tshirt.jpg" alt="T-Shirt" class="product-img">
+    <h2>T-Shirt</h2>
+    <p>$20</p>
+    <button onclick="addToCart('T-Shirt', 20)">Add to Cart</button>
+  </div>
+
+  <div class="product">
+    <img src="images/sneakers.jpg" alt="Sneakers" class="product-img">
+    <h2>Sneakers</h2>
+    <p>$50</p>
+    <button onclick="addToCart('Sneakers', 50)">Add to Cart</button>
+  </div>
+  <section id="products">
+  <div class="product">
+    <img src="images/tshirt.jpg" alt="T-Shirt" class="product-img">
+    <h2>T-Shirt</h2>
+    <p>$20</p>
+    <button onclick="addToCart('T-Shirt', 20)">Add to Cart</button>
+  </div>
+
+  <div class="product">
+    <img src="images/sneakers.jpg" alt="Sneakers" class="product-img">
+    <h2>Sneakers</h2>
+    <p>$50</p>
+    <button onclick="addToCart('Sneakers', 50)">Add to Cart</button>
+  </div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+<script src="script.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script src="script.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script src="script.js"></script>
+
+<section id="profile" style="display:none;">
+  <h2>Your Profile</h2>
+  <p id="profile-name"></p>
+  <h3>Your Listings</h3>
+  <div id="user-products"></div>
+</section>
+
+<section id="edit-product" style="display:none;">
+  <h2>Edit Product</h2>
+  <form id="edit-form">
+    <input type="text" id="edit-name" placeholder="Product name" required>
+    <input type="number" id="edit-price" placeholder="Price" required>
+    <button type="submit">Save Changes</button>
+  </form>
+</section>
+
+<section id="edit-image" style="display:none;">
+  <h2>Edit Product Image</h2>
+  <form id="edit-image-form">
+    <input type="file" id="new-image" accept="image/*" required>
+    <button type="submit">Save New Image</button>
+  </form>
+</section>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" style="display:none;" class="modal">
+  <div class="modal-content">
+    <p id="confirm-message"></p>
+    <button id="confirm-yes">Yes</button>
+    <button id="confirm-no">No</button>
+  </div>
+</div>
+
+<div id="confirm-modal" style="display:none;" class="modal">
+  <div class="modal-content">
+    <p id="confirm-message"></p>
+    <button id="confirm-yes" class="btn-confirm">Yes</button>
+    <button id="confirm-no" class="btn-cancel">No</button>
+  </div>
+</div>
+
+<!-- Include Font Awesome in your index.html head -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" style="display:none;" class="modal">
+  <div class="modal-content">
+    <i id="confirm-icon" class="fa"></i>
+    <p id="confirm-message"></p>
+    <button id="confirm-yes" class="btn-confirm">Yes</button>
+    <button id="confirm-no" class="btn-cancel">No</button>
+  </div>
+</div>
+
+ <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+<script src="script.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+<script src="script.js"></script>
+
+<form id="product-form">
+  <input type="text" id="product-name" placeholder="Product name" required>
+  <input type="number" id="product-price" placeholder="Price" required>
+  <input type="file" id="product-image" accept="image/*" required>
+
+  <!-- Category dropdown -->
+  <select id="product-category" required>
+    <option value="">Select category</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Fashion">Fashion</option>
+    <option value="Home">Home</option>
+    <option value="Vehicles">Vehicles</option>
+    <option value="Others">Others</option>
+  </select>
+
+  <button type="submit">Add Product</button>
+</form>
+
+<div id="category-filters">
+  <button onclick="filterCategory('Electronics')">Electronics</button>
+  <button onclick="filterCategory('Fashion')">Fashion</button>
+  <button onclick="filterCategory('Home')">Home</button>
+  <button onclick="filterCategory('Vehicles')">Vehicles</button>
+  <button onclick="filterCategory('Others')">Others</button>
+</div>
+
+<section id="chat" style="display:none;">
+  <h2>Chat</h2>
+  <div id="chat-window"></div>
+  <form id="chat-form">
+    <input type="text" id="chat-message" placeholder="Type a message..." required>
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
+
