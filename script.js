@@ -593,3 +593,43 @@ db.collection("chats")
       chatWindow.appendChild(msgDiv);
     });
   });
+
+  let storageRef = firebase.storage().ref("product-images/" + file.name);
+await storageRef.put(file);
+let imageURL = await storageRef.getDownloadURL();
+
+await db.collection("products").add({
+  name: name,
+  price: price,
+  imageURL: imageURL,   // ✅ store the download URL
+  owner: auth.currentUser.uid
+});
+
+productDiv.innerHTML = `
+  <img src="${product.imageURL}" alt="${product.name}" class="product-img">
+  <h2>${product.name}</h2>
+  <p>$${product.price}</p>
+`;
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    // Logged in
+    document.getElementById("nav-profile").style.display = "inline";
+    document.getElementById("nav-chat").style.display = "inline";
+    document.getElementById("logout").style.display = "inline";
+    document.getElementById("nav-login").style.display = "none";
+  } else {
+    // Logged out
+    document.getElementById("nav-profile").style.display = "none";
+    document.getElementById("nav-chat").style.display = "none";
+    document.getElementById("logout").style.display = "none";
+    document.getElementById("nav-login").style.display = "inline";
+  }
+});
+
+// Logout functionality
+document.getElementById("logout").addEventListener("click", () => {
+  auth.signOut().then(() => {
+    alert("Logged out!");
+  });
+});
