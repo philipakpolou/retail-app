@@ -1,30 +1,51 @@
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="profile.html">Profile</a>
-  <a href="chat.html">Chat</a>
-  <a href="auth.html">Login</a>
-</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Retail Store</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="profile.html">Profile</a>
+    <a href="chat.html">Chat</a>
+    <a href="auth.html" class="active">Login</a>
+  </nav>
 
-<section id="auth">
-  <h2>Login / Signup</h2>
-  <form id="signup-form">
-    <input type="email" id="signup-email" placeholder="Email" required>
-    <input type="password" id="signup-password" placeholder="Password" required>
-    <button type="submit">Sign Up</button>
-  </form>
+  <section id="auth">
+    <h2>Login / Signup</h2>
+    
+    <div id="auth-message" style="display:none;" class="message"></div>
 
-  <form id="login-form">
-    <input type="email" id="login-email" placeholder="Email" required>
-    <input type="password" id="login-password" placeholder="Password" required>
-    <button type="submit">Login</button>
-  </form>
+    <button id="toggle-form" class="form-toggle">Don't have an account? Sign Up</button>
 
-  <button id="logout">Logout</button>
+    <form id="login-form" style="display:block;">
+      <h3>Login</h3>
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
 
-  <button id="google-login">Login with Google</button>
+    <form id="signup-form" style="display:none;">
+      <h3>Sign Up</h3>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <input type="password" id="signup-confirm" placeholder="Confirm Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
 
-</section>
+    <button id="google-login">Login with Google</button>
+    <button id="logout" style="display:none;">Logout</button>
+  </section>
 
-<script src="firebase.js"></script>
-<script src="script.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+  <script src="./firebase.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>

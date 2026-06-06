@@ -1,213 +1,97 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 let cart = [];
 let total = 0;
 
 function addToCart(product, price) {
-  cart.push({ product, price });
-  total += price;
-
   const cartItems = document.getElementById("cart-items");
   const cartTotal = document.getElementById("cart-total");
+  if (!cartItems || !cartTotal) return;
+
+  cart.push({ product, price });
+  total += Number(price);
 
   const li = document.createElement("li");
   li.textContent = `${product} - $${price}`;
   cartItems.appendChild(li);
-
-  cartTotal.textContent = total;
-}
-document.getElementById("search-box").addEventListener("keyup", function() {
-  let query = this.value.toLowerCase();
-  let products = document.querySelectorAll(".product");
-
-  products.forEach(function(product) {
-    let name = product.querySelector("h2").textContent.toLowerCase();
-    if (name.includes(query)) {
-      product.style.display = "block";
-    } else {
-      product.style.display = "none";
-    }
-  });
-});
-function filterByPrice() {
-  let maxPrice = document.getElementById("price-filter").value;
-  let products = document.querySelectorAll(".product");
-
-  products.forEach(function(product) {
-    let priceText = product.querySelector("p").textContent.replace("$", "");
-    let price = parseFloat(priceText);
-
-    if (price <= maxPrice || maxPrice === "") {
-      product.style.display = "block";
-    } else {
-      product.style.display = "none";
-    }
-  });
+  cartTotal.textContent = total.toFixed(2);
 }
 
-document.getElementById("product-form").addEventListener("submit", function(e) {
-  e.preventDefault();
+function createProductCard(product, includeImage = false) {
+  const card = document.createElement("div");
+  card.classList.add("product");
 
-  let name = document.getElementById("product-name").value;
-  let price = document.getElementById("product-price").value;
-  let image = document.getElementById("product-image").files[0];
-
-  let productSection = document.getElementById("products");
-  let productDiv = document.createElement("div");
-  productDiv.classList.add("product");
-
-  productDiv.innerHTML = `
-    <img src="${URL.createObjectURL(image)}" alt="${name}" class="product-img">
-    <h2>${name}</h2>
-    <p>$${price}</p>
-    <button onclick="addToCart('${name}', ${price})">Add to Cart</button>
+  card.innerHTML = `
+    ${includeImage && product.image ? `<img src="${product.image}" alt="${product.name}" class="product-img">` : ""}
+    <h2>${product.name}</h2>
+    <p>$${product.price}</p>
+    <button onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
   `;
 
-  productSection.appendChild(productDiv);
-});
+  return card;
+}
 
+function filterByPrice() {
+  const maxValue = document.getElementById("price-filter").value;
+  const maxPrice = maxValue ? parseFloat(maxValue) : Infinity;
+  const products = document.querySelectorAll(".product");
 
+  products.forEach((product) => {
+    const priceText = product.querySelector("p")?.textContent.replace("$", "") || "0";
+    const price = parseFloat(priceText);
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBCjiJIooOgDCYrasEZG3rc1uQ4jxqi1ZY",
-  authDomain: "retail-app-8ff73.firebaseapp.com",
-  projectId: "retail-app-8ff73",
-  storageBucket: "retail-app-8ff73.firebasestorage.app",
-  messagingSenderId: "419919954453",
-  appId: "1:419919954453:web:914bca061f11727b65441c",
-  measurementId: "G-P5DVDSRE8P"
-};
-
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-document.getElementById("product-form").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  let name = document.getElementById("product-name").value;
-  let price = document.getElementById("product-price").value;
-
-  await db.collection("products").add({
-    name: name,
-    price: price
+    product.style.display = price <= maxPrice ? "block" : "none";
   });
+}
 
-  alert("Product added successfully!");
-});
+function displayMessage(id, text, type = "success") {
+  const message = document.getElementById(id);
+  if (!message) return;
+  message.textContent = text;
+  message.className = `message ${type}`;
+  message.style.display = "block";
+}
 
-db.collection("products").get().then(snapshot => {
-  snapshot.forEach(doc => {
-    let product = doc.data();
-    let productSection = document.getElementById("products");
+function clearMessage(id) {
+  const message = document.getElementById(id);
+  if (!message) return;
+  message.textContent = "";
+  message.style.display = "none";
+}
 
-    let productDiv = document.createElement("div");
-    productDiv.classList.add("product");
-    productDiv.innerHTML = `
-      <h2>${product.name}</h2>
-      <p>$${product.price}</p>
-      <button onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
-    `;
-    productSection.appendChild(productDiv);
-  });
-});
+function loadProductsFromFirestore() {
+  if (typeof db === "undefined" || !db) return;
 
-const auth = firebase.auth();
+  db.collection("products")
+    .get()
+    .then((snapshot) => {
+      const productSection = document.getElementById("products");
+      if (!productSection) return;
+      productSection.innerHTML = "";
 
-// Signup
-document.getElementById("signup-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  let email = document.getElementById("signup-email").value;
-  let password = document.getElementById("signup-password").value;
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      alert("Signup successful!");
+      snapshot.forEach((doc) => {
+        const product = doc.data();
+        const card = createProductCard(product, Boolean(product.image));
+        productSection.appendChild(card);
+      });
     })
-    .catch(error => {
-      alert(error.message);
+    .catch((error) => {
+      console.error("Error loading products:", error);
     });
-});
+}
 
-// Login
-document.getElementById("login-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  let email = document.getElementById("login-email").value;
-  let password = document.getElementById("login-password").value;
+function loadUserProducts(user) {
+  if (!user || typeof db === "undefined" || !db) return;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then(userCredential => {
-      alert("Login successful!");
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-});
+  const userProductsDiv = document.getElementById("user-products");
+  if (!userProductsDiv) return;
+  userProductsDiv.innerHTML = "";
 
-// Logout
-document.getElementById("logout").addEventListener("click", function() {
-  auth.signOut().then(() => {
-    alert("Logged out!");
-  });
-});
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("add-product").style.display = "block";
-  } else {
-    document.getElementById("add-product").style.display = "none";
-  }
-});
-
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
-
-// Google Login
-document.getElementById("google-login").addEventListener("click", function() {
-  auth.signInWithPopup(provider)
-    .then(result => {
-      const user = result.user;
-      alert("Welcome " + user.displayName + "!");
-    })
-    .catch(error => {
-      alert(error.message);
-    });
-});
-
-// Logout
-document.getElementById("logout").addEventListener("click", function() {
-  auth.signOut().then(() => {
-    alert("Logged out!");
-  });
-});
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("add-product").style.display = "block";
-  } else {
-    document.getElementById("add-product").style.display = "none";
-  }
-});
-
-await db.collection("products").add({
-  name: name,
-  price: price,
-  owner: auth.currentUser.uid // link product to logged-in user
-});
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("profile").style.display = "block";
-    document.getElementById("profile-name").textContent = "Logged in as: " + user.email;
-
-    // Load only this user's products
-    db.collection("products").where("owner", "==", user.uid).get().then(snapshot => {
-      let userProductsDiv = document.getElementById("user-products");
-      userProductsDiv.innerHTML = ""; // clear old listings
-
-      snapshot.forEach(doc => {
-        let product = doc.data();
-        let productDiv = document.createElement("div");
+  db.collection("products")
+    .where("owner", "==", user.uid)
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const product = doc.data();
+        const productDiv = document.createElement("div");
         productDiv.classList.add("product");
         productDiv.innerHTML = `
           <h2>${product.name}</h2>
@@ -216,31 +100,224 @@ auth.onAuthStateChanged(user => {
         `;
         userProductsDiv.appendChild(productDiv);
       });
+    })
+    .catch((error) => {
+      console.error("Error loading user products:", error);
     });
-  } else {
-    document.getElementById("profile").style.display = "none";
-  }
-});
+}
 
 function deleteProduct(id) {
-  db.collection("products").doc(id).delete().then(() => {
-    alert("Product deleted!");
-    location.reload(); // refresh listings
+  if (typeof db === "undefined" || !db) return;
+
+  db.collection("products")
+    .doc(id)
+    .delete()
+    .then(() => {
+      displayMessage("auth-message", "Product deleted successfully.", "success");
+      loadUserProducts(firebase.auth().currentUser);
+    })
+    .catch((error) => {
+      console.error("Delete error:", error);
+      displayMessage("auth-message", error.message, "error");
+    });
+}
+
+function setupAuthForms() {
+  const loginForm = document.getElementById("login-form");
+  const signupForm = document.getElementById("signup-form");
+  const toggleFormBtn = document.getElementById("toggle-form");
+  const googleLogin = document.getElementById("google-login");
+  const logoutBtn = document.getElementById("logout");
+
+  if (toggleFormBtn && loginForm && signupForm) {
+    toggleFormBtn.addEventListener("click", function () {
+      const showingLogin = loginForm.style.display !== "none";
+      loginForm.style.display = showingLogin ? "none" : "block";
+      signupForm.style.display = showingLogin ? "block" : "none";
+      this.textContent = showingLogin ? "Already have an account? Login" : "Don't have an account? Sign Up";
+    });
+  }
+
+  if (signupForm && typeof auth !== "undefined" && auth) {
+    signupForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearMessage("auth-message");
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const confirm = document.getElementById("signup-confirm").value;
+
+      if (password !== confirm) {
+        displayMessage("auth-message", "Passwords do not match.", "error");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          displayMessage("auth-message", "Signup successful!", "success");
+        })
+        .catch((error) => {
+          displayMessage("auth-message", error.message, "error");
+        });
+    });
+  }
+
+  if (loginForm && typeof auth !== "undefined" && auth) {
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearMessage("auth-message");
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          displayMessage("auth-message", "Login successful!", "success");
+        })
+        .catch((error) => {
+          displayMessage("auth-message", error.message, "error");
+        });
+    });
+  }
+
+  if (googleLogin && typeof auth !== "undefined" && auth) {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    googleLogin.addEventListener("click", function () {
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          displayMessage("auth-message", `Welcome ${result.user.displayName}!`, "success");
+        })
+        .catch((error) => {
+          displayMessage("auth-message", error.message, "error");
+        });
+    });
+  }
+
+  if (logoutBtn && typeof auth !== "undefined" && auth) {
+    logoutBtn.addEventListener("click", function () {
+      auth.signOut().catch((error) => {
+        displayMessage("auth-message", error.message, "error");
+      });
+    });
+  }
+}
+
+function setupChat() {
+  const chatForm = document.getElementById("chat-form");
+  if (!chatForm) return;
+
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const messageInput = document.getElementById("chat-message");
+    const chatWindow = document.getElementById("chat-window");
+    if (!chatWindow || !messageInput) return;
+
+    const messageText = messageInput.value.trim();
+    if (!messageText) return;
+
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "chat-message";
+    messageDiv.textContent = messageText;
+    chatWindow.appendChild(messageDiv);
+    messageInput.value = "";
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
 
-snapshot.forEach(doc => {
-  let product = doc.data();
-  let productDiv = document.createElement("div");
-  productDiv.classList.add("product");
-  productDiv.innerHTML = `
-    <h2>${product.name}</h2>
-    <p>$${product.price}</p>
-    <button onclick="editProduct('${doc.id}', '${product.name}', ${product.price})">Edit</button>
-    <button onclick="deleteProduct('${doc.id}')">Delete</button>
-  `;
-  userProductsDiv.appendChild(productDiv);
-});
+function setupFirebaseAuthState() {
+  if (typeof auth === "undefined" || !auth) return;
+
+  auth.onAuthStateChanged((user) => {
+    const copyAddProduct = document.getElementById("add-product");
+    const profileSection = document.getElementById("profile");
+    const profileName = document.getElementById("profile-name");
+    const authMessage = document.getElementById("auth-message");
+
+    if (copyAddProduct) {
+      copyAddProduct.style.display = user ? "block" : "none";
+    }
+
+    if (profileSection) {
+      profileSection.style.display = user ? "block" : "none";
+    }
+
+    if (profileName && user) {
+      profileName.textContent = `Logged in as: ${user.email}`;
+    }
+
+    if (user) {
+      loadUserProducts(user);
+    }
+
+    if (authMessage && !user) {
+      authMessage.style.display = "none";
+    }
+  });
+}
+
+function setupSearch() {
+  const searchBox = document.getElementById("search-box");
+  if (!searchBox) return;
+
+  searchBox.addEventListener("keyup", function () {
+    const query = this.value.toLowerCase();
+    const products = document.querySelectorAll(".product");
+
+    products.forEach((product) => {
+      const name = product.querySelector("h2")?.textContent.toLowerCase() || "";
+      product.style.display = name.includes(query) ? "block" : "none";
+    });
+  });
+}
+
+function setupAddProduct() {
+  const productForm = document.getElementById("product-form");
+  if (!productForm) return;
+
+  productForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("product-name").value;
+    const price = document.getElementById("product-price").value;
+    const imageFile = document.getElementById("product-image").files[0];
+    const productSection = document.getElementById("products");
+    if (!productSection) return;
+
+    const imageUrl = imageFile ? URL.createObjectURL(imageFile) : "";
+    const product = {
+      name,
+      price,
+      image: imageUrl,
+    };
+
+    productSection.appendChild(createProductCard(product, Boolean(imageUrl)));
+    productForm.reset();
+
+    if (typeof db !== "undefined" && db && typeof auth !== "undefined" && auth?.currentUser) {
+      db.collection("products").add({
+        ...product,
+        owner: auth.currentUser.uid,
+      }).catch((error) => {
+        console.error("Error saving product:", error);
+      });
+    }
+  });
+}
+
+function init() {
+  setupSearch();
+  setupAddProduct();
+  setupAuthForms();
+  setupChat();
+  setupFirebaseAuthState();
+  if (typeof db !== "undefined" && db) {
+    loadProductsFromFirestore();
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+
 
 function editProduct(id, name, price) {
   document.getElementById("edit-product").style.display = "block";
@@ -466,8 +543,7 @@ db.collection("products").get().then(snapshot => {
   });
 });
 
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Firebase initialized in `firebase.js`
 
 document.getElementById("product-form").addEventListener("submit", async function(e) {
   e.preventDefault();
@@ -633,3 +709,7 @@ document.getElementById("logout").addEventListener("click", () => {
     alert("Logged out!");
   });
 });
+
+function toggleMenu() {
+  document.getElementById("navbar").classList.toggle("active");
+}

@@ -1,197 +1,162 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background: #f9f9f9;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Consolidated stylesheet */
+/* Explanation: cleaned duplicate rules, added variables and responsive tweaks */
+
+:root{
+  --bg: #f9f9f9;
+  --surface: #ffffff;
+  --muted: #666666;
+  --accent: #333333;
+  --accent-2: #555555;
+  --success: #d4edda;
+  --danger: #f8d7da;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-header {
-  background: #333;
-  color: white;
-  padding: 15px;
-  text-align: center;
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: #222;
+  line-height:1.4;
 }
 
-.product {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin: 10px;
-  display: inline-block;
+header{background:var(--accent);color:#fff;padding:20px;text-align:center;box-shadow:var(--shadow)}
+
+nav{display:flex;justify-content:center;gap:18px;margin:14px 0;flex-wrap:wrap;background:var(--accent);padding:10px;align-items:center;border-radius:4px}
+nav a, nav button{color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px;margin:0 8px;background:none;border:none;cursor:pointer;transition:background .2s;}
+nav a:focus, nav button:focus{outline:2px solid rgba(255,255,255,0.08);outline-offset:2px}
+nav a.active, nav button.active{background:rgba(255,255,255,0.06);box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+nav a:hover, nav a.active{background:var(--accent-2)}
+
+section{max-width:1200px;margin:18px auto;padding:0 16px}
+
+/* Search & filters */
+#search{text-align:center;margin-bottom:12px}
+#search-box{width:100%;max-width:420px;padding:10px;border:1px solid #ccc;border-radius:6px}
+#filters{display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}
+#filters input, #filters button{padding:8px;border-radius:6px;border:1px solid #ccc}
+#filters button{background:var(--accent);color:#fff;border:none;cursor:pointer}
+
+/* Products grid */
+#products{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin:20px 0}
+.product{background:var(--surface);padding:14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);box-shadow:var(--shadow);text-align:center;transition:transform .18s}
+.product:hover{transform:translateY(-6px)}
+.product .product-img{width:100%;height:150px;object-fit:cover;border-radius:6px;margin-bottom:10px}
+.product h2{font-size:18px;margin-bottom:6px}
+.product p{color:var(--muted);margin-bottom:10px}
+.product button{background:var(--accent);color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer}
+.product button:hover{background:var(--accent-2)}
+
+/* Add product form */
+#add-product form{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
+#add-product input,#add-product button,#add-product select{padding:10px;border-radius:6px;border:1px solid #ccc}
+#add-product button{background:var(--accent);color:#fff;border:none}
+
+/* Form controls: labels and focus states */
+label{display:block;margin-bottom:6px;color:var(--accent-2);font-weight:600}
+input,textarea,select{padding:10px;border:1px solid rgba(0,0,0,0.12);border-radius:6px;background:var(--surface);transition:box-shadow .12s,border-color .12s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(51,51,51,0.04)}
+
+/* Hamburger improvements */
+.hamburger{background:transparent;color:var(--surface);padding:6px;border-radius:6px}
+
+/* Auth area */
+#auth{max-width:420px;margin:40px auto;padding:18px;background:var(--surface);border-radius:8px;border:1px solid rgba(0,0,0,0.05)}
+#auth form{display:flex;flex-direction:column;gap:10px}
+.form-toggle{background:transparent;border:1px solid #ccc;padding:8px;border-radius:6px;cursor:pointer;margin-bottom:8px}
+#auth-message{display:none;padding:10px;border-radius:6px;margin-bottom:10px}
+.message.success{background:var(--success);color:#155724;border:1px solid #c3e6cb}
+.message.error{background:var(--danger);color:#721c24;border:1px solid #f5c6cb}
+
+/* Cart */
+#cart{max-width:680px;margin:20px auto;padding:14px;background:var(--surface);border-radius:8px;border:1px solid rgba(0,0,0,0.05)}
+#cart-items{list-style:none;margin-top:12px}
+#cart-items li{background:#fafafa;padding:8px;border-radius:6px;margin-bottom:8px}
+
+/* Chat */
+.chat-window{border:1px solid #e0e0e0;padding:12px;height:400px;overflow-y:auto;background:var(--surface);border-radius:8px}
+.chat-message{background:#eaf4ff;padding:8px;border-radius:6px;margin-bottom:8px}
+.chat-form{display:flex;gap:10px;margin-top:10px}
+.chat-form input{flex:1;padding:10px;border-radius:6px;border:1px solid #ccc}
+.chat-form button{padding:10px 12px;border-radius:6px;background:var(--accent);color:#fff;border:none}
+
+/* Profile and edit sections */
+#profile{background:var(--surface);padding:14px;border-radius:8px;border:1px solid rgba(0,0,0,0.05);margin-bottom:12px}
+#user-products{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px}
+#edit-product, #edit-image{background:var(--surface);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.05)}
+
+/* Footer */
+footer{background:var(--accent);color:#fff;text-align:center;padding:16px;margin-top:30px}
+
+/* Responsive tweaks */
+@media (max-width:768px){
+  #products{grid-template-columns:repeat(2,1fr)}
+  .chat-window{height:300px}
 }
 
-.product-img {
-  width: 150px;
-  height: auto;
-  display: block;
-  margin-bottom: 10px;
-}
-.product-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-.product-price {
-  color: rgba(5, 5, 5, 0.827);
-  font-size: 16px;
-}
-.product-description {
-  font-size: 14px;
-  color: #555;
-}
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-}
-#products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  margin: 20px 0;
+@media (max-width:480px){
+  #products{grid-template-columns:1fr}
+  nav{flex-direction:column;align-items:center}
 }
 
-.product {
-  border: 1px solid #ccc;
-  padding: 15px;
-  text-align: center;
-  background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+/* Category icon colors */
+.electronics-icon { color: #007bff; } /* blue */
+.fashion-icon { color: #e83e8c; }     /* pink */
+.home-icon { color: #28a745; }        /* green */
+.vehicles-icon { color: #fd7e14; }    /* orange */
+.others-icon { color: #6c757d; }      /* gray */
+
+/* Hover effect: brighten icons */
+.dropdown-content a:hover i {
+  filter: brightness(1.3);
 }
-.product-img {
-  width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-}
-.product-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-.product-price {
-  color: rgba(5, 5, 5, 0.827);
-  font-size: 16px;
-}
-.product-description {
-  font-size: 14px;
-  color: #555;
-}
-#products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  margin: 20px 0;
-}
-/* For tablets */
+
+/* Desktop nav uses consolidated rules near the top */
+
+/* Mobile styles */
 @media (max-width: 768px) {
-  #products {
-    grid-template-columns: repeat(2, 1fr);
+  nav a, nav .dropdown {
+    display: none; /* hide links by default */
+    width: 100%;
+    text-align: left;
+  }
+
+  nav.active a, nav.active .dropdown {
+    display: block; /* show when active */
+  }
+
+  .hamburger {
+    display: block; /* show hamburger */
+    margin-left: auto;
+  }
+ 
+  /* 3. Stop form inputs from overlapping and crashing into borders */
+  form, .login-section, .post-ad-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 4px 0;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
   }
 }
 
-/* For mobile phones */
-@media (max-width: 480px) {
-  #products {
-    grid-template-columns: 1fr;
-  }
-}
-#search {
-  text-align: center;
-  margin: 20px 0;
-}
-
-#search-box {
-  width: 250px;
-  padding: 10px;
-  font-size: 16px;
-}
-#search-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-#search-button:hover {
-  background: #555;
-}
-#filters {
-  text-align: center;
-  margin: 20px 0;
-}
-
-#price-filter {
-  width: 120px;
-  padding: 8px;
-  font-size: 14px;
-}
-#category-filter {
-  width: 150px;
-  padding: 8px;
-  font-size: 14px;
-}
-
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-}
-.modal-content h2 {
-  margin-bottom: 15px;
-}
-
-.btn-confirm {
-  background-color: #28a745; /* green */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.btn-confirm:hover {
-  background-color: #218838;
-}
-
-.btn-cancel {
-  background-color: #6c757d; /* gray */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.btn-cancel:hover {
-  background-color: #5a6268;
-}
-
-/* Optional: special delete button style */
-.btn-delete {
-  background-color: #dc3545; /* red */
-  color: white;
-}
-
-.btn-delete:hover {
-  background-color: #c82333;
-}
-
-.modal-content i {
-  font-size: 40px;
-  margin-bottom: 10px;
-  color: #333;
-}
+ 
