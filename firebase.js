@@ -15,33 +15,5 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
-// Auth state listener
-auth.onAuthStateChanged((user) => {
-  const logoutBtn = document.getElementById("logout");
-  const loginForm = document.getElementById("login-form");
-  
-  if (user) {
-    console.log("User logged in:", user.email);
-    if (logoutBtn) logoutBtn.style.display = "block";
-    if (loginForm) loginForm.style.display = "none";
-  } else {
-    console.log("User logged out");
-    if (logoutBtn) logoutBtn.style.display = "none";
-    if (loginForm) loginForm.style.display = "block";
-  }
-});
-
-// Logout function
-function logout() {
-  auth.signOut().then(() => {
-    console.log("User logged out successfully");
-  }).catch(err => console.error("Logout error:", err));
-}
-
-const logoutBtn = document.getElementById("logout");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", logout);
-}
-
 
 

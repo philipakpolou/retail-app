@@ -13,7 +13,9 @@
     <a href="profile.html">Profile</a>
     <a href="chat.html">Chat</a>
     <a href="auth.html" class="active">Login</a>
+    <button id="logout" style="display:none;">Logout</button>
   </nav>
+  <div id="page-message" class="message" style="display:none;"></div>
 
   <section id="auth">
     <h2>Login / Signup</h2>
@@ -37,8 +39,7 @@
       <button type="submit">Sign Up</button>
     </form>
 
-    <button id="google-login">Login with Google</button>
-    <button id="logout" style="display:none;">Logout</button>
+    <button id="google-login" type="button">Login with Google</button>
   </section>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>

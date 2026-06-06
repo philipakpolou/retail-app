@@ -14,7 +14,9 @@
     <a href="profile.html" class="active">Profile</a>
     <a href="chat.html">Chat</a>
     <a href="auth.html">Login</a>
+    <button id="logout" style="display:none;">Logout</button>
   </nav>
+  <div id="page-message" class="message" style="display:none;"></div>
 
 <section id="profile">
     <h2>Your Profile</h2>
@@ -26,6 +28,7 @@
 <section id="edit-product" style="display:none;">
     <h2>Edit Product</h2>
     <form id="edit-form">
+      <input type="hidden" id="edit-id">
       <input type="text" id="edit-name" placeholder="Product name" required>
       <input type="number" id="edit-price" placeholder="Price" required>
       <button type="submit">Save Changes</button>
