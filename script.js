@@ -340,20 +340,6 @@ function editProduct(id, name, price) {
   };
 }
 
-snapshot.forEach(doc => {
-  let product = doc.data();
-  let productDiv = document.createElement("div");
-  productDiv.classList.add("product");
-  productDiv.innerHTML = `
-    <h2>${product.name}</h2>
-    <p>$${product.price}</p>
-    <img src="${product.imageURL || 'default.jpg'}" alt="${product.name}" class="product-img">
-    <button onclick="editProduct('${doc.id}', '${product.name}', ${product.price})">Edit</button>
-    <button onclick="editProductImage('${doc.id}')">Edit Image</button>
-    <button onclick="deleteProduct('${doc.id}')">Delete</button>
-  `;
-  userProductsDiv.appendChild(productDiv);
-});
 
 function editProductImage(id) {
   document.getElementById("edit-image").style.display = "block";
@@ -392,13 +378,7 @@ function showConfirm(message, onConfirm) {
 }
 
 // Example: Delete product with confirmation
-function deleteProduct(id) {
-  showConfirm("Are you sure you want to delete this product?", async function() {
-    await db.collection("products").doc(id).delete();
-    alert("Product deleted!");
-    location.reload();
-  });
-}
+// deleteProduct is defined earlier (uses db and reloads the user's listings).
 
 // Example: Edit product with confirmation
 function editProduct(id, name, price) {
